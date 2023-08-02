@@ -1,5 +1,4 @@
 import torch
-from typing import List
 
 class AtomicChessBoard:
     def __init__(self):
