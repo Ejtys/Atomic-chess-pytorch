@@ -65,6 +65,8 @@ def GameLoop():
         message = MakeMove(atomic)
         Displayboard(atomic)
         print(message[2] + ": " + message[0])
+        print(atomic.moveHistory[-1])
+        print(atomic.moveHistory[-2])
         if message[1] != None:
             break
     if message[1] == 0:
