@@ -18,7 +18,6 @@ class AtomicChessBoard:
         
     def SelectSquere(self, x: int, y: int):
         self.selectedSquere = [x, y]
-        return self.board[x][y]
     
     def Move(self, x: int, y: int):
         """Return list of message and winner (None if there is no winner yet, 0 for draw)"""
