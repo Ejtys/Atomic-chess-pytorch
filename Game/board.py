@@ -5,12 +5,12 @@ class AtomicChessBoard:
         """Black is represented as negative number, white as possitive. 
         1 - pawn, - 2 - knigh, 3 - bishop, 5 - rook, 9 - queen, 10 - king"""
         self.board = [[-5, -2, -3, -9, -10, -3, -2, -5],
-                      [-1, -1, -1, -1, -1,  -1, -1, -1],
+                      [-1, -1, -1, -1, -1,  -3, -1, -1],
                       [0,  0,  0,  0,  0,   0,  0,  0],
                       [0,  0,  0,  0,  0,   0,  0,  0],
                       [0,  0,  0,  0,  0,   0,  0,  0],
                       [0,  0,  0,  0,  0,   0,  0,  0],
-                      [1,  1,  1,  1,  1,   1,  1,  1],
+                      [1,  1,  3,  1,  1,   1,  1,  1],
                       [5,  2,  3,  9,  10,  3,  2,  5]]
         self.move = 0
         self.toPlay = 1
@@ -123,10 +123,52 @@ class AtomicChessBoard:
                     return self.Kill(x, y, f"{player} Knight")
             else: 
                 return [f"{player} Knight tried invalid move", self.toPlay * -1]
+              
+        #Bishop moves  
+        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 3:
+            if self.isDiagonal(x, y):
+                if self.isDiagonalSpaceEmpty(x, y):
+                    if self.board[x][y] == 0:
+                        self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                        self.board[x][y] = 3 * self.toPlay
+                        self.toPlay *= -1
+                        return [f"{player} Bishop moves to empty square", None]
+                    elif self.have_same_sign(self.board[x][y], self.toPlay):
+                        return [f"{player} Bishop tried to kill his own figure", self.toPlay * -1]
+                    else:
+                        return self.Kill(x, y, f"{player} Bishop")
+            else:
+                return [f"{player} Bishop tried invalid move", self.toPlay * -1]
                 
+                        
+                
+                
+    def isDiagonal(self, x2, y2):
+        x1 = self.selectedSquere[0]
+        y1 = self.selectedSquere[1]
+        return x1 - y1 == x2 - y2 or x1 + y1 == x2 + y2
+                    
+    def isDiagonalSpaceEmpty(self, x, y):
+        start = self.selectedSquere
+        end = (x, y)
+        direction = self.checkDiagonalDirection(start, end)
+        step = (start[0] + direction[0], start[1] + direction[1])
+        while step != end:
+            if self.board[step[0]][step[1]] !=0:
+                return False
+            step = (step[0] + direction[0], step[1] + direction[1])
+        return True
         
-                
-                
+    def checkDiagonalDirection(self, start, end):
+        if start[0] < end[0]:
+            topbottom = 1
+        else:
+           topbottom = -1
+        if start[1] < end[1]:
+            sides = 1
+        else:
+            sides = -1
+        return (topbottom, sides)
     
     def Kill(self, X, Y, pion):
         xs = [X - 1, X, X + 1]
