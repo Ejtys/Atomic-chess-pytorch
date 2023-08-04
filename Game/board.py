@@ -23,6 +23,7 @@ class AtomicChessBoard:
     def Move(self, x: int, y: int):
         """Return list of message and winner (None if there is no winner yet, 0 for draw)"""
         self.moveHistory.append([self.selectedSquere, [x, y]])
+        player = "White" if self.toPlay == 1 else "Black"
         
         # Checking if player selected proper squere to play
         if (self.board[self.selectedSquere[0]][self.selectedSquere[1]]) * self.toPlay < 1:
@@ -63,9 +64,7 @@ class AtomicChessBoard:
                     return ["White pawn tried to kill his own figure", self.toPlay * -1]
                     
             else:
-                return ["White pawn tried invalid move", self.toPlay * -1]
-                    
-                    
+                return ["White pawn tried invalid move", self.toPlay * -1]            
                 
         #Black pawn moves
         if self.board[self.selectedSquere[0]][self.selectedSquere[1]] == -1 and self.toPlay == -1:
@@ -103,7 +102,29 @@ class AtomicChessBoard:
 
             else: 
                 return ["Black pawn tried invalid move", self.toPlay * -1]
+              
+        #Knigh moves  
+        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 2:
+            #checking if move is valide
+            delta_x = abs(self.selectedSquere[0] - x)
+            delta_y = abs(self.selectedSquere[1] - y)
+            
+            IsValidKnightMove = (delta_x == 1 and delta_y == 2) or (delta_x == 2 and delta_y == 1)
+            
+            if IsValidKnightMove:
+                if self.board[x][y] == 0:
+                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[x][y] = 2 * self.toPlay
+                    self.toPlay *= -1
+                    return [f"{player} Knight moves to empty square", None]
+                elif self.have_same_sign(self.board[x][y], self.toPlay):
+                    return [f"{player} Knight tried to kill his own figure", self.toPlay * -1]
+                else:
+                    return self.Kill(x, y, f"{player} Knight")
+            else: 
+                return [f"{player} Knight tried invalid move", self.toPlay * -1]
                 
+        
                 
                 
     
@@ -136,7 +157,10 @@ class AtomicChessBoard:
         if kingisdead:
             return [pion + " killed opposite king", self.toPlay]
         self.toPlay *= -1                
-        return [f"{pion} killed {killcount} opposite figure(s)", None]  
+        return [f"{pion} killed {killcount} opposite figure(s)", None]
+    
+    def have_same_sign(self, a, b):
+        return (a >= 0 and b >= 0) or (a < 0 and b < 0)
     
 if __name__ == "__main__":
     atomic = AtomicChessBoard()
