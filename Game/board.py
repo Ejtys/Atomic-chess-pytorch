@@ -19,7 +19,7 @@ class AtomicChessBoard:
         self.boardHistory = []
         self.player = "White"
         self.lastPawnnMove = 0
-        
+         
     def SelectSquere(self, x: int, y: int):
         self.selectedSquere = [x, y]
     
