@@ -1,4 +1,4 @@
-
+import copy
 
 class AtomicChessBoard:
     def __init__(self):
@@ -16,6 +16,8 @@ class AtomicChessBoard:
         self.toPlay = 1
         self.selectedSquere = [0,0]
         self.moveHistory = [[[0,0],[0,0]]]
+        self.boardHistory = []
+        self.player = "White"
         
     def SelectSquere(self, x: int, y: int):
         self.selectedSquere = [x, y]
@@ -23,7 +25,9 @@ class AtomicChessBoard:
     def Move(self, x: int, y: int):
         """Return list of message and winner (None if there is no winner yet, 0 for draw)"""
         self.moveHistory.append([self.selectedSquere, [x, y]])
-        player = "White" if self.toPlay == 1 else "Black"
+        self.player = "White" if self.toPlay == 1 else "Black"
+        self.move += 1
+        self.boardHistory.append(copy.deepcopy(self.board))
         
         # Checking if player selected proper squere to play
         if (self.board[self.selectedSquere[0]][self.selectedSquere[1]]) * self.toPlay < 1:
@@ -116,42 +120,62 @@ class AtomicChessBoard:
                     self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
                     self.board[x][y] = 2 * self.toPlay
                     self.toPlay *= -1
-                    return [f"{player} Knight moves to empty square", None]
+                    return [f"{self.player} Knight moves to empty square", None]
                 elif self.have_same_sign(self.board[x][y], self.toPlay):
-                    return [f"{player} Knight tried to kill his own figure", self.toPlay * -1]
+                    return [f"{self.player} Knight tried to kill his own figure", self.toPlay * -1]
                 else:
-                    return self.Kill(x, y, f"{player} Knight")
+                    return self.Kill(x, y, f"{self.player} Knight")
             else: 
-                return [f"{player} Knight tried invalid move", self.toPlay * -1]
+                return [f"{self.player} Knight tried invalid move", self.toPlay * -1]
               
         #Bishop moves  
         if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 3:
+            return self.makeLongMove(x, y, self.isDiagonal, "Bishop", 3, "Diagonal")
+        
+        #Rook moves
+        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 5:
+            return self.makeLongMove(x, y, self.isOrthogonal, "Rook", 5, "Orthogonal")
+        
+        #Qeen moves
+        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 9:
             if self.isDiagonal(x, y):
-                if self.isDiagonalSpaceEmpty(x, y):
-                    if self.board[x][y] == 0:
-                        self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
-                        self.board[x][y] = 3 * self.toPlay
-                        self.toPlay *= -1
-                        return [f"{player} Bishop moves to empty square", None]
-                    elif self.have_same_sign(self.board[x][y], self.toPlay):
-                        return [f"{player} Bishop tried to kill his own figure", self.toPlay * -1]
-                    else:
-                        return self.Kill(x, y, f"{player} Bishop")
+                return self.makeLongMove(x, y, self.isDiagonal, "Queen", 9, "Diagonal")
+            elif self.isOrthogonal(x, y):
+                return self.makeLongMove(x, y, self.isOrthogonal, "Queen", 9, "Orthogonal")
             else:
-                return [f"{player} Bishop tried invalid move", self.toPlay * -1]
+                return [f"{self.player} Queen tried invalid move", self.toPlay * -1]
                 
-                        
+
+
+    def makeLongMove(self, x, y, func, figure, figureNum, kindOfMove):
+        if func(x, y):
+            if self.isBetweenSpaceEmpty(x, y):
+                if self.board[x][y] == 0:
+                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[x][y] = figureNum * self.toPlay
+                    self.toPlay *= -1
+                    return [f"{self.player} {figure} moves {kindOfMove}ly to empty square", None]
+                elif self.have_same_sign(self.board[x][y], self.toPlay):
+                    return [f"{self.player} {figure} tried to kill his own figure {kindOfMove}ly", self.toPlay * -1]
+                else:
+                    return self.Kill(x, y, f"{self.player} {figure} {kindOfMove}ly")
+            else:
+                return [f"{self.player} {figure} tried move {kindOfMove}ly over other figures", self.toPlay * -1]
+        else:
+            return [f"{self.player} {figure} tried invalid move", self.toPlay * -1]
                 
+    def isOrthogonal(self, x, y):
+        return self.selectedSquere[0] == x or self.selectedSquere[1] == y                                
                 
     def isDiagonal(self, x2, y2):
         x1 = self.selectedSquere[0]
         y1 = self.selectedSquere[1]
         return x1 - y1 == x2 - y2 or x1 + y1 == x2 + y2
                     
-    def isDiagonalSpaceEmpty(self, x, y):
+    def isBetweenSpaceEmpty(self, x, y):
         start = self.selectedSquere
         end = (x, y)
-        direction = self.checkDiagonalDirection(start, end)
+        direction = self.checkDirection(start, end)
         step = (start[0] + direction[0], start[1] + direction[1])
         while step != end:
             if self.board[step[0]][step[1]] !=0:
@@ -159,13 +183,17 @@ class AtomicChessBoard:
             step = (step[0] + direction[0], step[1] + direction[1])
         return True
         
-    def checkDiagonalDirection(self, start, end):
+    def checkDirection(self, start, end):
         if start[0] < end[0]:
             topbottom = 1
+        elif start[0] == end[0]:
+            topbottom = 0
         else:
            topbottom = -1
         if start[1] < end[1]:
             sides = 1
+        elif start[1] == end[1]:
+            sides = 0
         else:
             sides = -1
         return (topbottom, sides)
@@ -204,7 +232,3 @@ class AtomicChessBoard:
     def have_same_sign(self, a, b):
         return (a >= 0 and b >= 0) or (a < 0 and b < 0)
     
-if __name__ == "__main__":
-    atomic = AtomicChessBoard()
-    print(atomic.SelectSquere(6, 1))
-    print(atomic.Move(4,1))

@@ -6,8 +6,8 @@ def Displayboard(board: AtomicChessBoard):
     os.system("clear")
     for row_num, row in enumerate(board.board):
         print(8 - row_num, end = " | ")
-        for squere in row:
-            match squere:
+        for square in row:
+            match square:
                 case -1:
                     x = "p"
                 case -2:
