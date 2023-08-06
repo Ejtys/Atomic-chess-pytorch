@@ -54,7 +54,7 @@ def MakeMove(board: AtomicChessBoard):
             if s[1].upper() == letter:
                 break
         return x, y
-    board.SelectSquere(*translate(move[:-2]))
+    board.SelectSquare(*translate(move[:-2]))
     m = board.Move(*translate(move[2:]))
     return m[0], m[1], move.upper()
         

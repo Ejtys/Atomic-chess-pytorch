@@ -14,18 +14,18 @@ class AtomicChessBoard:
                       [5,  2,  3,  9,  10,  3,  2,  5]]
         self.move = 0
         self.toPlay = 1
-        self.selectedSquere = [0,0]
+        self.selectedSquare = [0,0]
         self.moveHistory = [[[0,0],[0,0]]]
         self.boardHistory = []
         self.player = "White"
         self.lastPawnnMove = 0
          
-    def SelectSquere(self, x: int, y: int):
-        self.selectedSquere = [x, y]
+    def SelectSquare(self, x: int, y: int):
+        self.selectedSquare = [x, y]
     
     def Move(self, x: int, y: int):
         """Return list of message and winner (None if there is no winner yet, 0 for draw)"""
-        self.moveHistory.append([self.selectedSquere, [x, y]])
+        self.moveHistory.append([self.selectedSquare, [x, y]])
         self.player = "White" if self.toPlay == 1 else "Black"
         self.move += 1
         self.boardHistory.append(copy.deepcopy(self.board))
@@ -37,32 +37,32 @@ class AtomicChessBoard:
             return ["Draw by 50 move rule", 0]
         
         
-        # Checking if player selected proper squere to play
-        if (self.board[self.selectedSquere[0]][self.selectedSquere[1]]) * self.toPlay < 1:
+        # Checking if player selected proper square to play
+        if (self.board[self.selectedSquare[0]][self.selectedSquare[1]]) * self.toPlay < 1:
             return ["Selected invalid square", self.toPlay * -1]
         
         #White pawn moves
-        if self.board[self.selectedSquere[0]][self.selectedSquere[1]] == 1 and self.toPlay == 1:
+        if self.board[self.selectedSquare[0]][self.selectedSquare[1]] == 1 and self.toPlay == 1:
             self.lastPawnnMove = self.move
             #White pawn move on the same file
-            if self.selectedSquere[1] == y:
+            if self.selectedSquare[1] == y:
                 if self.board[x][y] != 0:
-                    return ["White pawn tried to move to not empty squere", self.toPlay * -1]
-                elif self.board[x][y] == 0 and self.selectedSquere[0] - x == 1:
+                    return ["White pawn tried to move to not empty square", self.toPlay * -1]
+                elif self.board[x][y] == 0 and self.selectedSquare[0] - x == 1:
                     self.board[x][y] = 1
-                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
                     self.toPlay *= -1
                     return ["White pawn move by 1", None]
-                elif self.board[x][y] == 0 and self.selectedSquere[0] - x == 2 and self.selectedSquere[0] == 6:
+                elif self.board[x][y] == 0 and self.selectedSquare[0] - x == 2 and self.selectedSquare[0] == 6:
                     self.board[x][y] = 1
-                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
                     self.toPlay *= -1
                     return ["White pawn move by 2", None]
                 else:
                     return ["White pawn tried an illigale move on the same file", self.toPlay * -1]
                 
             #White diagonal pawn moves
-            elif self.selectedSquere[1] in (y + 1, y - 1) and self.selectedSquere[0] - x == 1:
+            elif self.selectedSquare[1] in (y + 1, y - 1) and self.selectedSquare[0] - x == 1:
                 if self.board[x][y] < 0:
                     return self.Kill(x, y, "White pion")
                 #En passant
@@ -71,7 +71,7 @@ class AtomicChessBoard:
                     self.board[x][y] = -1
                     return self.Kill(x, y, "White pion en passant")
                 elif self.board[x][y] == 0:
-                    return ["White pawn tried diagonal move on empty squere", self.toPlay * -1]
+                    return ["White pawn tried diagonal move on empty square", self.toPlay * -1]
                 else: 
                     return ["White pawn tried to kill his own figure", self.toPlay * -1]
                     
@@ -79,27 +79,27 @@ class AtomicChessBoard:
                 return ["White pawn tried invalid move", self.toPlay * -1]            
                 
         #Black pawn moves
-        if self.board[self.selectedSquere[0]][self.selectedSquere[1]] == -1 and self.toPlay == -1:
+        if self.board[self.selectedSquare[0]][self.selectedSquare[1]] == -1 and self.toPlay == -1:
             self.lastPawnnMove = self.move
             #Black pawn move on the same file
-            if self.selectedSquere[1] == y and self.toPlay == -1:
+            if self.selectedSquare[1] == y and self.toPlay == -1:
                 if self.board[x][y] != 0:
-                    return ["Black pawn tried to move to not empty squere", self.toPlay * -1]
-                elif self.board[x][y] == 0 and x - self.selectedSquere[0] == 1:
+                    return ["Black pawn tried to move to not empty square", self.toPlay * -1]
+                elif self.board[x][y] == 0 and x - self.selectedSquare[0] == 1:
                     self.board[x][y] = -1
-                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
                     self.toPlay *= -1
                     return ["Black pawn move by 1", None]
-                elif self.board[x][y] == 0 and x - self.selectedSquere[0] == 2 and self.selectedSquere[0] == 1:
+                elif self.board[x][y] == 0 and x - self.selectedSquare[0] == 2 and self.selectedSquare[0] == 1:
                     self.board[x][y] = -1
-                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
                     self.toPlay *= -1
                     return ["Black pawn move by 2", None]
                 else: 
                     return ["Black pawn tried an illigale move on the same file", self.toPlay * -1]
             
             #Black pion moves diagonally 
-            elif self.selectedSquere[1] in (y + 1, y - 1) and x - self.selectedSquere[0] == 1:
+            elif self.selectedSquare[1] in (y + 1, y - 1) and x - self.selectedSquare[0] == 1:
                 if self.board[x][y] < 0:
                     return self.Kill(x, y, "Black pion")
                 #En passant
@@ -108,7 +108,7 @@ class AtomicChessBoard:
                     self.board[x][y] = 1
                     return self.Kill(x, y, "Black pion en passant")
                 elif self.board[x][y] == 0:
-                    return ["Black pawn tried diagonal move on empty squere", self.toPlay * -1]
+                    return ["Black pawn tried diagonal move on empty square", self.toPlay * -1]
                 else: 
                     return ["Black pawn tried to kill his own figure", self.toPlay * -1]
 
@@ -116,16 +116,16 @@ class AtomicChessBoard:
                 return ["Black pawn tried invalid move", self.toPlay * -1]
               
         #Knigh moves  
-        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 2:
+        if abs(self.board[self.selectedSquare[0]][self.selectedSquare[1]]) == 2:
             #checking if move is valide
-            delta_x = abs(self.selectedSquere[0] - x)
-            delta_y = abs(self.selectedSquere[1] - y)
+            delta_x = abs(self.selectedSquare[0] - x)
+            delta_y = abs(self.selectedSquare[1] - y)
             
             IsValidKnightMove = (delta_x == 1 and delta_y == 2) or (delta_x == 2 and delta_y == 1)
             
             if IsValidKnightMove:
                 if self.board[x][y] == 0:
-                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
                     self.board[x][y] = 2 * self.toPlay
                     self.toPlay *= -1
                     return [f"{self.player} Knight moves to empty square", None]
@@ -137,15 +137,15 @@ class AtomicChessBoard:
                 return [f"{self.player} Knight tried invalid move", self.toPlay * -1]
               
         #Bishop moves  
-        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 3:
+        if abs(self.board[self.selectedSquare[0]][self.selectedSquare[1]]) == 3:
             return self.makeLongMove(x, y, self.isDiagonal, "Bishop", 3, "Diagonal")
         
         #Rook moves
-        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 5:
+        if abs(self.board[self.selectedSquare[0]][self.selectedSquare[1]]) == 5:
             return self.makeLongMove(x, y, self.isOrthogonal, "Rook", 5, "Orthogonal")
         
         #Qeen moves
-        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 9:
+        if abs(self.board[self.selectedSquare[0]][self.selectedSquare[1]]) == 9:
             if self.isDiagonal(x, y):
                 return self.makeLongMove(x, y, self.isDiagonal, "Queen", 9, "Diagonal")
             elif self.isOrthogonal(x, y):
@@ -154,10 +154,10 @@ class AtomicChessBoard:
                 return [f"{self.player} Queen tried invalid move", self.toPlay * -1]
 
         #King moves
-        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 10:
+        if abs(self.board[self.selectedSquare[0]][self.selectedSquare[1]]) == 10:
             if (self.isDiagonal(x, y) or self.isOrthogonal(x, y)) and self.isOneSquareAway(x, y):
                 if self.board[x][y] == 0:
-                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
                     self.board[x][y] = 10 * self.toPlay
                     self.toPlay *= -1
                     return [f"{self.player} King moves to empyty square", None]
@@ -167,7 +167,7 @@ class AtomicChessBoard:
                 return [f"{self.player} King tries invalid move", self.toPlay * -1]
             
     def isOneSquareAway(self, x, y):
-        x1, y1 = self.selectedSquere
+        x1, y1 = self.selectedSquare
         return (abs(x - x1) == 1 and (abs(y - y1) == 1 or abs(y - y1) == 0)) or (abs(x - x1) == 0 and (abs(y - y1) == 1 or abs(y - y1) == 0)) 
                 
     def isThreeFoldRepetition(self):
@@ -188,7 +188,7 @@ class AtomicChessBoard:
         if func(x, y):
             if self.isBetweenSpaceEmpty(x, y):
                 if self.board[x][y] == 0:
-                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
                     self.board[x][y] = figureNum * self.toPlay
                     self.toPlay *= -1
                     return [f"{self.player} {figure} moves {kindOfMove}ly to empty square", None]
@@ -202,15 +202,15 @@ class AtomicChessBoard:
             return [f"{self.player} {figure} tried invalid move", self.toPlay * -1]
                 
     def isOrthogonal(self, x, y):
-        return self.selectedSquere[0] == x or self.selectedSquere[1] == y                                
+        return self.selectedSquare[0] == x or self.selectedSquare[1] == y                                
                 
     def isDiagonal(self, x2, y2):
-        x1 = self.selectedSquere[0]
-        y1 = self.selectedSquere[1]
+        x1 = self.selectedSquare[0]
+        y1 = self.selectedSquare[1]
         return x1 - y1 == x2 - y2 or x1 + y1 == x2 + y2
                     
     def isBetweenSpaceEmpty(self, x, y):
-        start = self.selectedSquere
+        start = self.selectedSquare
         end = (x, y)
         direction = self.checkDirection(start, end)
         step = (start[0] + direction[0], start[1] + direction[1])
@@ -247,7 +247,7 @@ class AtomicChessBoard:
                     pass                  
         
         kingisdead = False
-        self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+        self.board[self.selectedSquare[0]][self.selectedSquare[1]] = 0
         self.board[X][Y] = 0
         killcount = 1
         for x in xs:
