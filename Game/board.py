@@ -152,13 +152,30 @@ class AtomicChessBoard:
                 return self.makeLongMove(x, y, self.isOrthogonal, "Queen", 9, "Orthogonal")
             else:
                 return [f"{self.player} Queen tried invalid move", self.toPlay * -1]
+
+        #King moves
+        if abs(self.board[self.selectedSquere[0]][self.selectedSquere[1]]) == 10:
+            if (self.isDiagonal(x, y) or self.isOrthogonal(x, y)) and self.isOneSquareAway(x, y):
+                if self.board[x][y] == 0:
+                    self.board[self.selectedSquere[0]][self.selectedSquere[1]] = 0
+                    self.board[x][y] = 10 * self.toPlay
+                    self.toPlay *= -1
+                    return [f"{self.player} King moves to empyty square", None]
+                else:
+                    return [f"{self.player} King tries to not empty square", self.toPlay * -1]
+            else:
+                return [f"{self.player} King tries invalid move", self.toPlay * -1]
+            
+    def isOneSquareAway(self, x, y):
+        x1, y1 = self.selectedSquere
+        return (abs(x - x1) == 1 and (abs(y - y1) == 1 or abs(y - y1) == 0)) or (abs(x - x1) == 0 and (abs(y - y1) == 1 or abs(y - y1) == 0)) 
                 
     def isThreeFoldRepetition(self):
         same_cound = 0
         for board in self.boardHistory:
             if self.areBoardsTheSame(board, self.board):
                 same_cound += 1
-        return same_cound >= 4
+        return same_cound >= 3
     
     def areBoardsTheSame(self, board1, board2):
         for x in range(len(board1)):
