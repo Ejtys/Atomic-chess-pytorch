@@ -18,6 +18,7 @@ class AtomicChessBoard:
         self.moveHistory = [[[0,0],[0,0]]]
         self.boardHistory = []
         self.player = "White"
+        self.lastPawnnMove = 0
         
     def SelectSquere(self, x: int, y: int):
         self.selectedSquere = [x, y]
@@ -29,13 +30,20 @@ class AtomicChessBoard:
         self.move += 1
         self.boardHistory.append(copy.deepcopy(self.board))
         
+        if self.isThreeFoldRepetition():
+            return ["Draw by threefold repetition", 0]
+        
+        if self.move - self.lastPawnnMove >= 100:
+            return ["Draw by 50 move rule", 0]
+        
+        
         # Checking if player selected proper squere to play
         if (self.board[self.selectedSquere[0]][self.selectedSquere[1]]) * self.toPlay < 1:
             return ["Selected invalid square", self.toPlay * -1]
         
         #White pawn moves
         if self.board[self.selectedSquere[0]][self.selectedSquere[1]] == 1 and self.toPlay == 1:
-            
+            self.lastPawnnMove = self.move
             #White pawn move on the same file
             if self.selectedSquere[1] == y:
                 if self.board[x][y] != 0:
@@ -72,7 +80,7 @@ class AtomicChessBoard:
                 
         #Black pawn moves
         if self.board[self.selectedSquere[0]][self.selectedSquere[1]] == -1 and self.toPlay == -1:
-        
+            self.lastPawnnMove = self.move
             #Black pawn move on the same file
             if self.selectedSquere[1] == y and self.toPlay == -1:
                 if self.board[x][y] != 0:
@@ -145,7 +153,19 @@ class AtomicChessBoard:
             else:
                 return [f"{self.player} Queen tried invalid move", self.toPlay * -1]
                 
-
+    def isThreeFoldRepetition(self):
+        same_cound = 0
+        for board in self.boardHistory:
+            if self.areBoardsTheSame(board, self.board):
+                same_cound += 1
+        return same_cound >= 4
+    
+    def areBoardsTheSame(self, board1, board2):
+        for x in range(len(board1)):
+            for y in range(len(board1[0])):
+                if board1[x][y] != board2[x][y]:
+                    return False
+        return True
 
     def makeLongMove(self, x, y, func, figure, figureNum, kindOfMove):
         if func(x, y):
