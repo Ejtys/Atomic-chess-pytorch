@@ -1,0 +1,3 @@
+SCREEN_WIDTH = 800
+SCREEN_HIGHT = 800
+TITLE = "Atomic Chess"

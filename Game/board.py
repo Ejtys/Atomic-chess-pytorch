@@ -12,7 +12,7 @@ class AtomicChessBoard:
                       [0,  0,  0,  0,  0,   0,  0,  0],
                       [1,  1,  3,  1,  1,   1,  1,  1],
                       [5,  2,  3,  9,  10,  3,  2,  5]]
-        self.move = 1
+        self.move = 0
         self.toPlay = 1
         self.selectedSquare = [0,0]
         self.moveHistory = [[[0,0],[0,0]]]
